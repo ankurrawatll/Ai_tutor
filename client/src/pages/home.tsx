@@ -5,6 +5,7 @@ import ScenarioSelector from '@/components/ScenarioSelector';
 import VoiceChat from '@/components/VoiceChat';
 import { apiRequest } from '@/lib/queryClient';
 import { scenarios, type Scenario } from '@/utils/scenarios';
+import { SUPPORTED_LANGUAGES, type LanguageConfig } from '@/utils/languages';
 import type { ChatSession } from '@shared/schema';
 
 type AppState = 'landing' | 'scenarios' | 'chat';
@@ -12,13 +13,14 @@ type AppState = 'landing' | 'scenarios' | 'chat';
 export default function Home() {
   const [appState, setAppState] = useState<AppState>('landing');
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
+  const [selectedLanguage, setSelectedLanguage] = useState<LanguageConfig>(SUPPORTED_LANGUAGES[0]);
 
   // Create chat session mutation
   const createSessionMutation = useMutation({
     mutationFn: async (scenario: string) => {
       const response = await apiRequest('POST', '/api/chat/sessions', {
         scenario,
-        language: 'en-US'
+        language: selectedLanguage.languageCode
       });
       return response.json() as Promise<ChatSession>;
     },
@@ -99,9 +101,19 @@ export default function Home() {
               <h1 className="text-2xl font-bold letter-spacing-wide text-shadow-glow">SPEAKGENIE</h1>
             </div>
             <div className="flex items-center space-x-6">
-              <button className="px-4 py-2 rounded-lg glass-morphism hover:bg-white/20 transition-all duration-300">
-                <i className="fas fa-language mr-2"></i>EN/HI
-              </button>
+              <div className="relative">
+                <button 
+                  className="px-4 py-2 rounded-lg glass-morphism hover:bg-white/20 transition-all duration-300 flex items-center space-x-2"
+                  onClick={() => {
+                    const nextIndex = (SUPPORTED_LANGUAGES.findIndex(lang => lang.id === selectedLanguage.id) + 1) % SUPPORTED_LANGUAGES.length;
+                    setSelectedLanguage(SUPPORTED_LANGUAGES[nextIndex]);
+                  }}
+                >
+                  <span>{selectedLanguage.flag}</span>
+                  <span>{selectedLanguage.name}</span>
+                  <i className="fas fa-chevron-down text-xs"></i>
+                </button>
+              </div>
               <button className="px-6 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg hover:from-indigo-600 hover:to-purple-600 transition-all duration-300">
                 <i className="fas fa-user mr-2"></i>Profile
               </button>
@@ -168,6 +180,159 @@ export default function Home() {
         <div className="absolute bottom-10 right-10 w-20 h-20 animate-float">
           <div className="w-full h-full bg-gradient-to-r from-amber-400 to-orange-500 rounded-full flex items-center justify-center shadow-lg" id="genieAvatar">
             <i className="fas fa-user-astronaut text-white text-2xl"></i>
+          </div>
+        </div>
+      </section>
+
+      {/* Tutorial Section */}
+      <section className="relative py-20">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-16">
+            <h3 className="text-4xl font-black letter-spacing-wider text-shadow-glow mb-4">
+              <span className="bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
+                HOW TO USE SPEAKGENIE
+              </span>
+            </h3>
+            <p className="text-xl text-gray-400 letter-spacing-wide">Simple guide to master all features</p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {/* Step 1: Language Selection */}
+            <div className="glass-morphism rounded-2xl p-6 hover:bg-white/10 transition-all duration-300">
+              <div className="w-16 h-16 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center mb-4">
+                <span className="text-2xl">🇮🇳</span>
+              </div>
+              <h4 className="text-xl font-bold mb-3 letter-spacing-wide">1. Choose Language</h4>
+              <p className="text-gray-400 text-sm leading-relaxed">
+                Click the language button in the header to cycle through 10 Indian languages. 
+                Each language supports native text responses and smart TTS fallbacks.
+              </p>
+              <div className="mt-4 text-xs text-gray-500">
+                <strong>Supported:</strong> English, Hindi, Marathi, Gujarati, Tamil, Telugu, Kannada, Malayalam, Bengali, Punjabi
+              </div>
+            </div>
+
+            {/* Step 2: Start Chat */}
+            <div className="glass-morphism rounded-2xl p-6 hover:bg-white/10 transition-all duration-300">
+              <div className="w-16 h-16 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-xl flex items-center justify-center mb-4">
+                <i className="fas fa-comments text-white text-2xl"></i>
+              </div>
+              <h4 className="text-xl font-bold mb-3 letter-spacing-wide">2. Start Conversation</h4>
+              <p className="text-gray-400 text-sm leading-relaxed">
+                Click "Start Free Chat" for open conversations or "Browse Scenarios" for specific roleplay situations like school, restaurant, or airport.
+              </p>
+              <div className="mt-4 text-xs text-gray-500">
+                <strong>Scenarios:</strong> Free Chat, School, Store, Restaurant, Airport, Home
+              </div>
+            </div>
+
+            {/* Step 3: Voice Interaction */}
+            <div className="glass-morphism rounded-2xl p-6 hover:bg-white/10 transition-all duration-300">
+              <div className="w-16 h-16 bg-gradient-to-r from-pink-500 to-red-500 rounded-xl flex items-center justify-center mb-4">
+                <i className="fas fa-microphone text-white text-2xl"></i>
+              </div>
+              <h4 className="text-xl font-bold mb-3 letter-spacing-wide">3. Speak & Listen</h4>
+              <p className="text-gray-400 text-sm leading-relaxed">
+                Speak naturally in your chosen language. AI responds in the same language with native text and voice playback using smart TTS fallbacks.
+              </p>
+              <div className="mt-4 text-xs text-gray-500">
+                <strong>Features:</strong> Speech Recognition, Text-to-Speech, Smart Fallbacks
+              </div>
+            </div>
+
+            {/* Step 4: Test TTS */}
+            <div className="glass-morphism rounded-2xl p-6 hover:bg-white/10 transition-all duration-300">
+              <div className="w-16 h-16 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-xl flex items-center justify-center mb-4">
+                <i className="fas fa-volume-up text-white text-2xl"></i>
+              </div>
+              <h4 className="text-xl font-bold mb-3 letter-spacing-wide">4. Test Voice</h4>
+              <p className="text-gray-400 text-sm leading-relaxed">
+                Use "Test TTS" button to hear AI responses in your selected language. 
+                Voice debug panel shows available voices and fallback strategies.
+              </p>
+              <div className="mt-4 text-xs text-gray-500">
+                <strong>Debug Info:</strong> Available voices, language support, TTS strategy
+              </div>
+            </div>
+
+            {/* Step 5: Language Switching */}
+            <div className="glass-morphism rounded-2xl p-6 hover:bg-white/10 transition-all duration-300">
+              <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center mb-4">
+                <i className="fas fa-language text-white text-2xl"></i>
+              </div>
+              <h4 className="text-xl font-bold mb-3 letter-spacing-wide">5. Switch Languages</h4>
+              <p className="text-gray-400 text-sm leading-relaxed">
+                Change languages anytime during conversation. AI adapts instantly to your new language choice with appropriate responses and voice.
+              </p>
+              <div className="mt-4 text-xs text-gray-500">
+                <strong>Instant:</strong> Language switching, voice adaptation, response translation
+              </div>
+            </div>
+
+            {/* Step 6: Smart Features */}
+            <div className="glass-morphism rounded-2xl p-6 hover:bg-white/10 transition-all duration-300">
+              <div className="w-16 h-16 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl flex items-center justify-center mb-4">
+                <i className="fas fa-magic text-white text-2xl"></i>
+              </div>
+              <h4 className="text-xl font-bold mb-3 letter-spacing-wide">6. Smart Features</h4>
+              <p className="text-gray-400 text-sm leading-relaxed">
+                AI remembers conversation context, provides educational responses, and uses smart TTS fallbacks for all Indian languages even when native voices aren't available.
+              </p>
+              <div className="mt-4 text-xs text-gray-500">
+                <strong>Smart:</strong> Context memory, educational content, TTS fallbacks
+              </div>
+            </div>
+          </div>
+
+          {/* Quick Tips */}
+          <div className="mt-16 glass-morphism rounded-2xl p-8 max-w-4xl mx-auto">
+            <h4 className="text-2xl font-bold mb-6 letter-spacing-wide text-center">
+              <span className="bg-gradient-to-r from-green-400 to-blue-500 bg-clip-text text-transparent">
+                💡 QUICK TIPS
+              </span>
+            </h4>
+            <div className="grid md:grid-cols-2 gap-6 text-sm">
+              <div className="space-y-3">
+                <div className="flex items-start space-x-3">
+                  <span className="text-green-400 text-lg">✅</span>
+                  <div>
+                    <strong>Best Experience:</strong> Use Chrome browser for optimal voice support
+                  </div>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <span className="text-green-400 text-lg">✅</span>
+                  <div>
+                    <strong>Clear Speech:</strong> Speak slowly and clearly for better recognition
+                  </div>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <span className="text-green-400 text-lg">✅</span>
+                  <div>
+                    <strong>Language Practice:</strong> Try different scenarios for varied conversations
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-3">
+                <div className="flex items-start space-x-3">
+                  <span className="text-blue-400 text-lg">ℹ️</span>
+                  <div>
+                    <strong>TTS Fallbacks:</strong> Hindi voice used for Marathi/Gujarati (phonetically similar)
+                  </div>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <span className="text-blue-400 text-lg">ℹ️</span>
+                  <div>
+                    <strong>Voice Debug:</strong> Check available voices and TTS strategy in debug panel
+                  </div>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <span className="text-blue-400 text-lg">ℹ️</span>
+                  <div>
+                    <strong>Kid-Safe:</strong> All content is age-appropriate for 6-16 year olds
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>

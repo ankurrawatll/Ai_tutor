@@ -12,8 +12,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const sessionData = insertChatSessionSchema.parse(req.body);
       const session = await storage.createChatSession(sessionData);
       
-      // Generate welcome message for the scenario
-      const welcomeMessage = await generateWelcomeMessage(sessionData.scenario);
+      // Generate welcome message for the scenario and language
+      const welcomeMessage = await generateWelcomeMessage(sessionData.scenario, sessionData.language || 'en-US');
       
       // Add welcome message to chat
       await storage.addChatMessage({
@@ -65,14 +65,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Save user message
       const userMessage = await storage.addChatMessage(messageData);
       
-      // Get session to determine scenario
+      // Get session to determine scenario and language
       const session = await storage.getChatSession(req.params.sessionId);
       if (!session) {
         return res.status(404).json({ message: 'Chat session not found' });
       }
 
-      // Get AI response
-      const aiResponse = await getChatResponse(messageData.message, session.scenario);
+      // Get AI response with language support
+      const aiResponse = await getChatResponse(messageData.message, session.scenario, session.language || 'en-US');
       
       // Save AI response
       const aiMessage = await storage.addChatMessage({
