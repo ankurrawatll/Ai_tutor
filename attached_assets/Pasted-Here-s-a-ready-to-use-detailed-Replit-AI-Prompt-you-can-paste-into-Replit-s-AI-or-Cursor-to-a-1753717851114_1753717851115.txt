@@ -1,0 +1,158 @@
+Here’s a **ready-to-use, detailed Replit AI Prompt** you can paste into Replit’s AI (or Cursor) to auto-generate and refine your internship project:
+
+---
+
+## 🎯 **Replit AI Prompt for SpeakGenie Internship Project**
+
+````
+# 🔥 Build SpeakGenie: Real-Time AI Voice Tutor with Gemini API
+
+## ✅ Requirements:
+- Build a **React (Vite) web app** that works as a **real-time AI voice tutor** for children aged 6–16.
+- **Two modes must be supported**:
+  1. 🗣️ **Free-flow AI Chatbot** – Students talk freely, AI replies with voice.
+  2. 🎭 **Interactive Roleplay** – Students practice through guided scenarios (School, Store, Home, etc.).
+
+---
+
+## 🛠️ **Tech Stack:**
+- **Frontend:** React + Tailwind CSS (for clean UI)  
+- **AI:** Google Gemini API (free tier via API key from .env)  
+- **Voice Input:** Browser Web Speech API `SpeechRecognition` (no extra service)  
+- **Voice Output:** Browser Web Speech API `SpeechSynthesis` (no extra service)  
+- **No paid APIs** allowed for TTS or STT.
+
+---
+
+## 🚩 **Features to Implement:**
+1. 🎤 **Voice Input (STT)**
+   - Use `window.SpeechRecognition` or `window.webkitSpeechRecognition`.
+   - Capture speech, convert to text, show in UI.
+
+2. 🗨️ **AI Responses (Gemini API)**
+   - Send user text to Gemini API with role-based prompts.
+   - Receive AI response (friendly, age-appropriate).
+   - Display response in chat bubbles.
+
+3. 🔊 **Voice Output (TTS)**
+   - Use `SpeechSynthesisUtterance` to speak AI responses aloud.
+   - Add language support: English (default), Hindi (`msg.lang = 'hi-IN'`).
+
+4. 🎭 **Roleplay Mode**
+   - Add selectable scenarios (`School`, `Store`, `Home`, `Airport`, `Restaurant`).
+   - Modify system prompts dynamically for each scenario.
+   - Ensure Genie asks follow-up questions to keep conversation alive.
+
+5. 🌐 **Multilingual Playback**
+   - Allow switching TTS between English & Hindi voices.
+
+6. 🎨 **Modern Animated UI**
+   - Add **3D parallax animated background** (with Three.js or CSS parallax).
+   - Include a **floating Genie avatar** that animates when speaking.
+   - Chat bubbles with emoji support and soft glassmorphism design.
+
+---
+
+## ✨ **Extra (to Stand Out for Selection)**
+- ✅ Emoji feedback for student replies (👏👍😊).
+- ✅ Smart fallback if Gemini API fails (predefined contextual responses).
+- ✅ Kid-safe personality (no sensitive topics).
+- ✅ Roleplay memory (AI remembers last user input in that scenario).
+
+---
+
+## 🧩 **Implementation Details**
+1. **Project Structure**
+   - `/src/components/VoiceRecorder.jsx` → Handles STT
+   - `/src/components/ChatUI.jsx` → Chat display
+   - `/src/App.jsx` → Main logic, API calls, TTS
+   - `/src/utils/geminiAPI.js` → Gemini API integration
+   - `/src/config/scenarios.js` → Roleplay prompts & fallback responses
+
+2. **Gemini API Setup**
+   - Use **Gemini Flash** (fast, cheap, good for this task).
+   - API Key stored in `.env` → `VITE_GEMINI_KEY=your_key_here`.
+   - Fetch example:
+```javascript
+export async function askGemini(prompt) {
+  const res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateText?key=" + import.meta.env.VITE_GEMINI_KEY, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ prompt })
+  });
+  const data = await res.json();
+  return data.candidates?.[0]?.output || "Hmm, I need to think!";
+}
+````
+
+3. **Voice Synthesis (TTS)**
+
+```javascript
+function speakText(text, lang="en-US") {
+  const msg = new SpeechSynthesisUtterance(text);
+  msg.lang = lang;
+  msg.rate = 1.0;
+  msg.pitch = 1.1;
+  speechSynthesis.speak(msg);
+}
+```
+
+4. **Speech Recognition (STT)**
+
+```javascript
+function startListening(callback) {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const recognition = new SpeechRecognition();
+  recognition.lang = "en-US";
+  recognition.interimResults = false;
+  recognition.onresult = (e) => callback(e.results[0][0].transcript);
+  recognition.start();
+}
+```
+
+5. **Parallax Background**
+
+   * Use **Three.js animated particles** or **CSS parallax layers**.
+   * Example: animated gradient background with floating 3D objects.
+
+---
+
+## ✅ **Deliverables**
+
+* ✅ Fully working web app (host on Replit or Vercel).
+* ✅ `README.md` with setup instructions.
+* ✅ Showcase modern UI + working AI voice tutor + roleplay.
+
+---
+
+## 🧠 **Replit AI Task**
+
+👉 **Replit AI**, generate the entire project with:
+
+* React + Tailwind + Three.js background
+* Components for voice recognition, chat UI, roleplay selection
+* Integration with Gemini API
+* Web Speech API for STT/TTS
+* Predefined fallback responses
+
+---
+
+🚀 **Generate Now:**
+“**Create the full project SpeakGenie (React + Tailwind), using Gemini API for chat, browser Web Speech API for STT/TTS, animated 3D parallax background, roleplay scenarios, and kid-friendly UI.**”
+
+```
+
+---
+
+### ✅ This prompt:
+✔️ Clearly states all requirements  
+✔️ Specifies **Gemini API** (free tier)  
+✔️ Forces **browser STT/TTS (no paid tools)**  
+✔️ Requests **modern animated UI** to impress  
+✔️ Guides AI to produce a **complete project structure**
+
+---
+
+💡 Want me to also give you a **separate “Roleplay-Specific Prompt”** to improve natural conversation (avoid teacher addressing “class”)?  
+👉 Shall I prepare that next?
+```
