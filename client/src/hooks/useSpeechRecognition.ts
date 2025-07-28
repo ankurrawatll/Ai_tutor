@@ -16,8 +16,6 @@ interface UseSpeechRecognitionReturn {
   error: string | null;
 }
 
-/// <reference path="../types/speech.d.ts" />
-
 export function useSpeechRecognition(
   options: UseSpeechRecognitionOptions = {}
 ): UseSpeechRecognitionReturn {
